@@ -1,0 +1,6 @@
+*.clean
+*.olean
+*.ilean
+*.d
+*.ninja
+.ninja*
