@@ -19,6 +19,9 @@ inductive token :=
    | plus : token
    | var : string -> token
 
+definition token_has_to_string [instance] : has_to_string token :=
+  {| has_to_string, to_string := fun x, "BAHHH" |}
+
 open token
 open option
 open bool
@@ -26,10 +29,10 @@ open bool
 definition to_token : string → option token
 | to_token [] := none
 | to_token (c :: cs) :=
-  let t : option token := match (fin.val c) with
-    | 128 := some (var "x")
-    | 129 := some (var "y")
-    | 43 := some plus
+  let t : option token := match c with
+    | 'x' := some (var "x")
+    | 'y' := some (var "y")
+    | '+' := some plus
     | _ := none
   end in t
 
@@ -71,11 +74,28 @@ definition put_str_rec : list string -> IO unit
       put_str_rec ss
   | put_str_rec [] := return unit.star
 
-definition main : IO unit := do
-  s <- get_line_good,
-  put_str_rec (split_by (fin.mk 32 (admit 32)) s)
+-- definition traverse {f t : Type -> Type} {A B : Type} (tr : A -> f B) : t B -> f (t B) :=
 
-vm_eval main
+definition traverse {A B : Type} (tr : A -> option B) : list A -> option (list B)
+| traverse [] := some []
+| traverse (a :: xs) :=
+  match tr a with
+  | none := none
+  | some b :=
+    match traverse xs with
+    | none := none
+    | some bs := some (b :: bs)
+    end
+  end
+
+definition put_str_ln {A} [s : has_to_string A] (x : A) : IO unit :=
+  put_str (to_string x)
+
+-- definition main : IO unit := do
+--   s <- get_line_good,
+--   put_str_rec (split_by (fin.mk 32 (admit 32)) s)
+
+vm_eval (split_by ' ' "fooo bar")
   -- put_str (to_string (is_space (fin.mk 1 (sorry))))
   -- str <- get_line,
   -- put_str (trim_ws_left (prod.pr2 (take_while (fun c, bool.bnot (is_space c)) str)))
