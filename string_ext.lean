@@ -12,7 +12,7 @@ open string
 -- end
 
 definition is_space (c : char) : bool :=
-if (fin.val c = 102)
+if (fin.val c = 32)
 then bool.tt
 else bool.ff
 

@@ -23,37 +23,60 @@ open token
 open option
 open bool
 
--- definition to_token : string → option token
--- | to_token [] := none
--- | to_token (c :: cs) :=
---   let t : option token := match (fin.val c) with
---     | 128 := some (var "x")
---     | 129 := some (var "y")
---     | 43 := some plus
---     | _ := none
---   end in t
+definition to_token : string → option token
+| to_token [] := none
+| to_token (c :: cs) :=
+  let t : option token := match (fin.val c) with
+    | 128 := some (var "x")
+    | 129 := some (var "y")
+    | 43 := some plus
+    | _ := none
+  end in t
 
--- definition take_while {A : Type} (pred : A -> bool) : list A -> (list A × list A)
--- | take_while [] := ([], [])
--- | take_while (x :: xs) :=
---     match pred x with
---                  | (f, b) := (x :: f, b)
---                  end
---     | bool.ff := ([], x :: xs)
---     end
+definition trim_ws_left (s : string) :=
+   (drop_while is_space s)
 
--- definition trim_ws_left (s : string) :=
---   prod.pr2 (take_while is_space s)
+definition split_by (c : char) : string -> list string
+  | split_by (c' :: cs) :=
+    if c = c'
+    then [] :: split_by cs
+    else match split_by cs with
+    | [] := (c' :: []) :: []
+    | (s :: ss) := (c' :: s) :: ss
+    end
+  | split_by [] := []
 
--- vm_eval (put_str (prod.pr1 (take_while (fun c, bool.bnot (is_space c)) "fooo barr")))
+definition head_or_else {A : Type} (default : A) : list A -> A
+  | head_or_else (c :: cs) := c
+  | head_or_else nil := default
 
--- definition split_by (pred : char -> bool) : string -> list string :=
---   | split_by 
+constant admit : forall v, (v : nat) < 256
+
+definition default_char : char :=
+  fin.mk 48 (admit 48)
 
 definition id_opt (A : Type) (x : A) := x
 
-definition main : IO unit :=
-  put_str (to_string (is_space (fin.mk 1 (sorry))))
+definition get_line_good : IO string := do
+  s <- get_line,
+  return (list.reverse s)
+
+definition put_str_good (s : string) : IO unit := do
+  put_str (list.reverse s)
+
+definition put_str_rec : list string -> IO unit
+  | put_str_rec (s :: ss) := do
+      put_str_good s,
+      put_str_good ",",
+      put_str_rec ss
+  | put_str_rec [] := return unit.star
+
+definition main : IO unit := do
+  s <- get_line_good,
+  put_str_rec (split_by (fin.mk 32 (admit 32)) s)
+
+vm_eval main
+  -- put_str (to_string (is_space (fin.mk 1 (sorry))))
   -- str <- get_line,
   -- put_str (trim_ws_left (prod.pr2 (take_while (fun c, bool.bnot (is_space c)) str)))
 
