@@ -1,6 +1,7 @@
 import init.string
 import init.bool
 import string_ext
+import list_ext
 import system.IO
 
 -- set_option trace.compiler true
@@ -48,6 +49,8 @@ open bool
 
 -- definition split_by (pred : char -> bool) : string -> list string :=
 --   | split_by 
+
+definition id_opt (A : Type) (x : A) := x
 
 definition main : IO unit :=
   put_str (to_string (is_space (fin.mk 1 (sorry))))
