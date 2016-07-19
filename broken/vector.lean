@@ -34,6 +34,8 @@ constant vappend_vnil_right :
   --   (by intros, simp)
   --   by do return unit.star
 
+check intron
+
 theorem vappend_assoc :
   Π {A : Type} {n m k : nat} (v1 : vector A n) (v2 : vector A m) (v3 : vector A k),
   vappend (vappend v1 v2) v3 == vappend v1 (vappend v2 v3) :=

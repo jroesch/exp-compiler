@@ -26,15 +26,14 @@ open token
 open option
 open bool
 
-definition to_token : string → option token
-| to_token [] := none
-| to_token (c :: cs) :=
-  let t : option token := match c with
-    | 'x' := some (var "x")
-    | 'y' := some (var "y")
-    | '+' := some plus
-    | _ := none
-  end in t
+-- definition to_token : string → option token
+-- | to_token [] := none
+-- | to_token (c :: cs) := let t : option token := match c with
+--     | 'x' := some (var "x")
+--     | 'y' := some (var "y")
+--     | '+' := some plus
+--     | _ := none
+--   end in t
 
 definition trim_ws_left (s : string) :=
    (drop_while is_space s)
@@ -75,27 +74,26 @@ definition put_str_rec : list string -> IO unit
   | put_str_rec [] := return unit.star
 
 -- definition traverse {f t : Type -> Type} {A B : Type} (tr : A -> f B) : t B -> f (t B) :=
-
-definition traverse {A B : Type} (tr : A -> option B) : list A -> option (list B)
-| traverse [] := some []
-| traverse (a :: xs) :=
-  match tr a with
-  | none := none
-  | some b :=
-    match traverse xs with
-    | none := none
-    | some bs := some (b :: bs)
-    end
-  end
+-- definition traverse {A B : Type} (tr : A -> option B) : list A -> option (list B)
+-- | traverse [] := some []
+-- | traverse (a :: xs) :=
+--   match tr a with
+--   | none := none
+--   | some b :=
+--     match traverse xs with
+--     | none := none
+--     | some bs := some (b :: bs)
+--     end
+--   end
 
 definition put_str_ln {A} [s : has_to_string A] (x : A) : IO unit :=
-  put_str (to_string x)
+    put_str (list.cons '\n' (to_string x))
 
 -- definition main : IO unit := do
 --   s <- get_line_good,
 --   put_str_rec (split_by (fin.mk 32 (admit 32)) s)
 
-vm_eval (split_by ' ' "fooo bar")
+-- vm_eval (split_by ' ' "fooo bar")
   -- put_str (to_string (is_space (fin.mk 1 (sorry))))
   -- str <- get_line,
   -- put_str (trim_ws_left (prod.pr2 (take_while (fun c, bool.bnot (is_space c)) str)))
@@ -105,3 +103,9 @@ vm_eval (split_by ' ' "fooo bar")
   
 -- definition main : IO unit :=
 --   put_seq (nat.to_string) (seq.cons 1 (seq.cons 2 (seq.cons 3 seq.nil)))
+
+definition main : IO unit := do
+  s <- get_line,
+  put_str_ln s
+
+vm_eval main
