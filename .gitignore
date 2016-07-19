@@ -5,3 +5,4 @@
 *.ninja
 .ninja*
 build.ninja
+.#*
